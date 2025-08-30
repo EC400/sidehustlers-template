@@ -1,0 +1,122 @@
+// create-structure.js
+const fs = require('fs');
+const path = require('path');
+
+const structure = [
+  'src/app/(auth)/login',
+  'src/app/(auth)/register',
+  'src/app/(marketing)',
+  'src/app/account/profile',
+  'src/app/account/settings',
+  'src/app/dashboard/buyer',
+  'src/app/dashboard/seller',
+  'src/app/services/[category]',
+  'src/app/services/[id]',
+  'src/app/services/create',
+  'src/app/orders/[id]',
+  'src/app/disputes/[id]',
+  'src/app/chat/[conversationId]',
+  'src/app/api/auth',
+  'src/app/api/services',
+  'src/app/api/orders',
+  'src/app/api/chat',
+  'src/app/api/disputes',
+  'src/app/api/webhooks',
+  'src/app/api/stripe',
+  'src/components/ui',
+  'src/components/layout',
+  'src/components/services',
+  'src/components/chat',
+  'src/components/review',
+  'src/components/payment',
+  'src/lib',
+  'src/hooks',
+  'src/types',
+  'src/styles',
+  'public/images',
+  'public/icons'
+];
+
+structure.forEach(dir => {
+  const dirPath = path.join(__dirname, dir);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+    // Erstelle eine Platzhalter-Datei in jedem Verzeichnis
+    const placeholderPath = path.join(dirPath, '.gitkeep');
+    fs.writeFileSync(placeholderPath, '');
+  }
+});
+
+// Erstelle wichtige Konfigurationsdateien
+const files = {
+  'next.config.js': `/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
+  images: {
+    domains: ['localhost'],
+  },
+}
+
+module.exports = nextConfig`,
+  'src/app/layout.tsx': `import './globals.css'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata = {
+  title: 'Meine Dienstleistungsplattform',
+  description: 'Platform für Dienstleistungen wie Fiverr oder eBay Kleinanzeigen',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="de">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
+}`,
+  'src/app/globals.css': `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}`
+};
+
+Object.entries(files).forEach(([filePath, content]) => {
+  const fullPath = path.join(__dirname, filePath);
+  const dir = path.dirname(fullPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(fullPath, content);
+});
+
+console.log('Projektstruktur erfolgreich erstellt!');
